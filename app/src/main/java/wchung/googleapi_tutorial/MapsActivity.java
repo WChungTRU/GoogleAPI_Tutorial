@@ -38,8 +38,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private final int MY_PERMISSIONS_REQUEST_LOCATION = 1; //request location
-    private Polygon polygon;
-    private PolygonOptions rectOptions;
+    private Polygon polygon1, polygon2, polygon3;
+    private PolygonOptions rectOptions1, rectOptions2, rectOptions3;
     Boolean crossed = false; //when user crosses location fence change colour
     private LocationRequest mLocationRequest;
     private GoogleApiClient mGoogleApiClient;
@@ -47,6 +47,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Marker mCurrLocationMarker;
     double latitude;
     double longitude;
+    private Boolean crossed1, crossed2, crossed3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +83,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+        crossed1 = false;
+        crossed2 = false;
+        crossed3 = false;
+
         // Add a marker in TRU and move the camera
         LatLng kamloops = new LatLng(50.67046254, -120.3623406);
 
@@ -90,19 +97,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(kamloops, 17)); //17 is the zoom amount
 
         // Add a polygon
-        rectOptions = new PolygonOptions()
+        rectOptions1 = new PolygonOptions()
                 .add(   new LatLng(50.67065191, -120.3619401),
                         new LatLng(50.67065191, -120.3627411),
                         new LatLng(50.67027317, -120.3627411),
                         new LatLng(50.67027317, -120.3619401));
 
-        //when we cross the fence it will change the colour of the rectangle
-        if (crossed == true) {
-            rectOptions.strokeColor(-65536);
-            rectOptions.fillColor(Color.argb(20, 255, 80, 255));
-        }
+        rectOptions1.strokeColor(-65536);
+        rectOptions1.fillColor(Color.argb(20, 255, 80, 255));
+
+        rectOptions2 = new PolygonOptions()
+                .add(   new LatLng(50.670742, -120.361825),
+                        new LatLng(50.670761, -120.361394),
+                        new LatLng(50.670525, -120.361376),
+                        new LatLng(50.670500, -120.361838));
+
+        rectOptions2.strokeColor(-65536);
+        rectOptions2.fillColor(Color.argb(20, 255, 80, 255));
+
+
+        rectOptions3 = new PolygonOptions()
+                .add(   new LatLng(50.670427, -120.362548),
+                        new LatLng(50.670422, -120.362088),
+                        new LatLng(50.670246, -120.362103),
+                        new LatLng(50.670234, -120.362494));
+
+        rectOptions3.strokeColor(-65536);
+        rectOptions3.fillColor(Color.argb(20, 255, 80, 255));
+
+
         // Get back the mutable Polygon
-        polygon = mMap.addPolygon(rectOptions);
+        polygon1 = mMap.addPolygon(rectOptions1);
+        polygon2 = mMap.addPolygon(rectOptions2);
+        polygon3 = mMap.addPolygon(rectOptions3);
+
+
+        //when we cross the fence it will change the colour of the rectangle
+        //if (crossed == true) {
+        //    rectOptions.strokeColor(-65536);
+        //    rectOptions.fillColor(Color.argb(20, 255, 80, 255));
+        //}
+        // Get back the mutable Polygon
+        //polygon = mMap.addPolygon(rectOptions);
 
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // Should we show an explanation?
@@ -237,12 +273,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
+
+        //start the timer
     }
 
     @Override
@@ -262,8 +300,35 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //mLastLocation = location;
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            if (latitude <= 50.67065191 && latitude >= 50.67027317 && longitude <= -120.3619401 && longitude >= -120.3627411){
-                Toast.makeText(getBaseContext(),"Current Location: Lat = " + latitude + ", and longitude = " + longitude, Toast.LENGTH_SHORT).show();
+
+
+            if (latitude <= 50.67065191 && latitude >= 50.67027317 && longitude <= -120.3619401 && longitude >= -120.3627411
+                    && crossed1 == false && crossed2 == false && crossed3 == false){
+                //Toast.makeText(getBaseContext(),"Current Location: Lat = " + latitude + ", and longitude = " + longitude, Toast.LENGTH_SHORT).show();
+                crossed1 = true;
+                Toast.makeText(getBaseContext(),"Checkpoint1 found!" + longitude, Toast.LENGTH_SHORT).show();
+            }
+
+            if (latitude <= 50.670742 && latitude >= 50.670525 && longitude <= -120.361825 && longitude >= 120.361376
+                    && crossed1 == true && crossed2 == false && crossed3 == false){
+
+                //Toast.makeText(getBaseContext(),"Current Location: Lat = " + latitude + ", and longitude = " + longitude, Toast.LENGTH_SHORT).show();
+                crossed2 = true;
+                Toast.makeText(getBaseContext(),"Checkpoint2 found!" + longitude, Toast.LENGTH_SHORT).show();
+            }
+
+            if (latitude <= 50.670427 && latitude >= 50.670246 && longitude <= -120.362548 && longitude >= -120.362103
+                    && crossed1 == true && crossed2 == true && crossed3 == false){
+                //Toast.makeText(getBaseContext(),"Current Location: Lat = " + latitude + ", and longitude = " + longitude, Toast.LENGTH_SHORT).show();
+                crossed3 = true;
+                Toast.makeText(getBaseContext(),"Checkpoint3 found! Go back!" + longitude, Toast.LENGTH_SHORT).show();
+            }
+
+            if (crossed1 == true && crossed2 == true && crossed3) {
+                //stop timer
+
+                //display time
+
             }
         }
     }
