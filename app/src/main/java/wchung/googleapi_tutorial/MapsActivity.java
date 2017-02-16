@@ -48,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double latitude;
     double longitude;
     private Boolean crossed1, crossed2, crossed3;
+    private String time;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +58,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        //create a timer
+
+        //start timer
+
     }
 
     @Override
@@ -92,25 +98,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng kamloops = new LatLng(50.67046254, -120.3623406);
 
         //create a marker on the map
-        mMap.addMarker(new MarkerOptions().position(kamloops).title("Marker in Kamloops 1")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ghost)));
+        //mMap.addMarker(new MarkerOptions().position(kamloops).title("Marker in Kamloops 1")
+        //        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ghost)));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(kamloops, 17)); //17 is the zoom amount
 
         // Add a polygon
         rectOptions1 = new PolygonOptions()
-                .add(   new LatLng(50.67065191, -120.3619401),
-                        new LatLng(50.67065191, -120.3627411),
-                        new LatLng(50.67027317, -120.3627411),
-                        new LatLng(50.67027317, -120.3619401));
+                .add(   new LatLng(50.670783, -120.361965), //top right
+                        new LatLng(50.670783, -120.362407), //top left
+                        new LatLng(50.670591, -120.362407), //bottom left
+                        new LatLng(50.670591, -120.361965));//bottom right
 
         rectOptions1.strokeColor(-65536);
         rectOptions1.fillColor(Color.argb(20, 255, 80, 255));
 
         rectOptions2 = new PolygonOptions()
                 .add(   new LatLng(50.670742, -120.361825),
-                        new LatLng(50.670761, -120.361394),
-                        new LatLng(50.670525, -120.361376),
-                        new LatLng(50.670500, -120.361838));
+                        new LatLng(50.670742, -120.361394),
+                        new LatLng(50.670500, -120.361394),
+                        new LatLng(50.670500, -120.361825));
 
         rectOptions2.strokeColor(-65536);
         rectOptions2.fillColor(Color.argb(20, 255, 80, 255));
@@ -118,9 +124,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         rectOptions3 = new PolygonOptions()
                 .add(   new LatLng(50.670427, -120.362548),
-                        new LatLng(50.670422, -120.362088),
-                        new LatLng(50.670246, -120.362103),
-                        new LatLng(50.670234, -120.362494));
+                        new LatLng(50.670427, -120.362088),
+                        new LatLng(50.670234, -120.362088),
+                        new LatLng(50.670234, -120.362548));
 
         rectOptions3.strokeColor(-65536);
         rectOptions3.fillColor(Color.argb(20, 255, 80, 255));
@@ -301,35 +307,88 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             latitude = location.getLatitude();
             longitude = location.getLongitude();
 
-
-            if (latitude <= 50.67065191 && latitude >= 50.67027317 && longitude <= -120.3619401 && longitude >= -120.3627411
-                    && crossed1 == false && crossed2 == false && crossed3 == false){
+            if (latitude <= 50.670783 && latitude >= 50.670591 && longitude <= -120.361965 && longitude >= -120.362407){
                 //Toast.makeText(getBaseContext(),"Current Location: Lat = " + latitude + ", and longitude = " + longitude, Toast.LENGTH_SHORT).show();
-                crossed1 = true;
-                Toast.makeText(getBaseContext(),"Checkpoint1 found!" + longitude, Toast.LENGTH_SHORT).show();
+                Log.d("Log", "Here #1");
+
+                if(crossed1 == false && crossed2 == false && crossed3 == false){
+                    crossed1 = true;
+                    Toast.makeText(getBaseContext(),"Checkpoint1 found!", Toast.LENGTH_SHORT).show();
+                    Log.d("Log", "Here #2");
+                }
             }
 
-            if (latitude <= 50.670742 && latitude >= 50.670525 && longitude <= -120.361825 && longitude >= 120.361376
-                    && crossed1 == true && crossed2 == false && crossed3 == false){
-
+            else if (latitude <= 50.670742 && latitude >= 50.670500 && longitude <= -120.361394 && longitude >= -120.361825){
                 //Toast.makeText(getBaseContext(),"Current Location: Lat = " + latitude + ", and longitude = " + longitude, Toast.LENGTH_SHORT).show();
-                crossed2 = true;
-                Toast.makeText(getBaseContext(),"Checkpoint2 found!" + longitude, Toast.LENGTH_SHORT).show();
+                Log.d("Log", "Here #3");
+
+                if(crossed1 == true && crossed2 == false && crossed3 == false) {
+                    crossed2 = true;
+                    Toast.makeText(getBaseContext(), "Checkpoint2 found!", Toast.LENGTH_SHORT).show();
+                    Log.d("Log", "Here #4");
+                }
+                else {
+                    Toast.makeText(getBaseContext(),"Oops, wrong checkpoint!", Toast.LENGTH_SHORT).show();
+                    Log.d("Log", "Here #5");
+                }
+
             }
 
-            if (latitude <= 50.670427 && latitude >= 50.670246 && longitude <= -120.362548 && longitude >= -120.362103
-                    && crossed1 == true && crossed2 == true && crossed3 == false){
+            else if (latitude <= 50.670427 && latitude >= 50.670234 && longitude <= -120.362088 && longitude >= -120.362548){
                 //Toast.makeText(getBaseContext(),"Current Location: Lat = " + latitude + ", and longitude = " + longitude, Toast.LENGTH_SHORT).show();
-                crossed3 = true;
-                Toast.makeText(getBaseContext(),"Checkpoint3 found! Go back!" + longitude, Toast.LENGTH_SHORT).show();
+                Log.d("Log", "Here #6");
+
+                if(crossed1 == true && crossed2 == true && crossed3 == false) {
+                    crossed3 = true;
+                    Toast.makeText(getBaseContext(), "Checkpoint3 found! Timer stopped." , Toast.LENGTH_SHORT).show();
+                    Log.d("Log", "Here #7");
+                }
+                else {
+                    Toast.makeText(getBaseContext(),"Oops, wrong checkpoint!" , Toast.LENGTH_SHORT).show();
+                    Log.d("Log", "Here #8");
+                }
             }
 
-            if (crossed1 == true && crossed2 == true && crossed3) {
+            if (crossed1 == true && crossed2 == true && crossed3 == true) {
+                Toast.makeText(getBaseContext(),"You found them all!" , Toast.LENGTH_SHORT).show();
+                Log.d("Log", "Here #9");
                 //stop timer
 
-                //display time
+                //set time to string
 
+                //display time
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Your time is: " + time);
+
+                builder.setPositiveButton("Restart", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //MainActivity.super.onBackPressed();
+                        System.exit(0);
+                    }
+                });
+
+                builder.show();
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Do you want to stop the game?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                //MainActivity.super.onBackPressed();
+                System.exit(0);
+            }
+        });
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
     }
 }
