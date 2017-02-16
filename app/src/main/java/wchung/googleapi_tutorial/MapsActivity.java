@@ -30,6 +30,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.PolygonOptions;
+import java.util.Calendar;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback ,
         GoogleApiClient.ConnectionCallbacks,
@@ -49,6 +50,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     double longitude;
     private Boolean crossed1, crossed2, crossed3;
     private String time;
+    private Calendar cal;
+    private long startTime, endTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +62,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        //create a timer
+        cal = Calendar.getInstance();
 
-        //start timer
-
+        //get start time in seconds
+        startTime = System.currentTimeMillis()/1000;
+        Log.d("Log", "startTime: " + startTime);
     }
 
     @Override
@@ -348,28 +352,46 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.d("Log", "Here #8");
                 }
             }
-
-            if (crossed1 == true && crossed2 == true && crossed3 == true) {
-                Toast.makeText(getBaseContext(),"You found them all!" , Toast.LENGTH_SHORT).show();
-                Log.d("Log", "Here #9");
-                //stop timer
-
-                //set time to string
-
-                //display time
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setTitle("Your time is: " + time);
-
-                builder.setPositiveButton("Restart", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //MainActivity.super.onBackPressed();
-                        System.exit(0);
-                    }
-                });
-
-                builder.show();
-            }
         }
+
+        //TODO: put this code where it is not called every second
+        if (crossed1 == true && crossed2 == true && crossed3 == true) {
+            Toast.makeText(getBaseContext(),"You found them all!" , Toast.LENGTH_SHORT).show();
+            Log.d("Log", "Here #9");
+
+            //get end time in seconds
+            endTime = System.currentTimeMillis()/1000;
+            Log.d("Log", "endTime: " + endTime);
+
+            //calculate total time spent
+            //set time to string
+            time = String.valueOf(getTime(startTime, endTime));
+
+            //display time
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Your time is: " + time + " seconds!");
+
+            builder.setPositiveButton("Restart", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+
+                    crossed1 = false;
+                    crossed2 = false;
+                    crossed3 = false;
+
+                    //MainActivity.super.onBackPressed();
+                    System.exit(0);
+                }
+            });
+
+            builder.show();
+        }
+    }
+
+    public long getTime(long start, long end) {
+        long calculatedTime = 0;
+        calculatedTime = end - start;
+
+        return calculatedTime;
     }
 
     @Override
