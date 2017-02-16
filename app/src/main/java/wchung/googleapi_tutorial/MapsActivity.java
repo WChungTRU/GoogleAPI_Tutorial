@@ -367,7 +367,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //set time to string
             time = String.valueOf(getTime(startTime, endTime));
 
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);0
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
 
             //display time
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
